@@ -102,7 +102,7 @@ privKey, err := keygen.DerivePrivateKey(w.Mnemonic, 0, chain.Ethereum)
 | Bitcoin Cash | `chain.BitcoinCash` | `1...` | WIF |
 | Dash | `chain.Dash` | `X...` | WIF |
 | ZCash | `chain.ZCash` | `t1...` | WIF |
-| Solana | `chain.Solana` | base58 pubkey | hex |
+| Solana | `chain.Solana` | base58 pubkey (see note) | hex |
 | XRP | `chain.XRP` | `r...` | `0x...` hex |
 
 ```go
@@ -136,6 +136,17 @@ for _, c := range chains {
         c, w.Mnemonic, w.XPub, addr, privKey)
 }
 ```
+
+> **Solana multi-address derivation:** Because SLIP-0010 with ed25519 only supports hardened child
+> derivation, public-key child derivation is cryptographically impossible for Solana. As a result,
+> `DeriveAddress(xpub, index, chain.Solana)` only works for `index == 0` (it returns the xpub itself).
+> For `index > 0` it returns `keygen.ErrSolanaPublicDerivation`. To derive multiple Solana addresses,
+> use `DerivePrivateKey` with the desired index and then convert with `SolanaAddressFromPrivKey`:
+>
+> ```go
+> privKey, err := keygen.DerivePrivateKey(w.Mnemonic, 5, chain.Solana)
+> addr, err := keygen.SolanaAddressFromPrivKey(privKey)
+> ```
 
 Unsupported networks return `keygen.ErrUnsupportedChain`:
 

@@ -22,6 +22,10 @@ import (
 
 var ErrUnsupportedChain = errors.New("keygen: unsupported chain")
 
+var ErrSolanaPublicDerivation = errors.New(
+	"keygen: Solana does not support public key derivation; " +
+		"use DerivePrivateKey to get the private key at the desired index")
+
 type Wallet struct {
 	Mnemonic string
 	XPub     string
@@ -159,6 +163,9 @@ func DeriveAddress(xpub string, index uint32, c chain.Chain) (string, error) {
 	}
 
 	if info.family == familySOL {
+		if index != 0 {
+			return "", ErrSolanaPublicDerivation
+		}
 		return xpub, nil
 	}
 
@@ -396,6 +403,15 @@ func solanaXPub(seed []byte) (string, error) {
 		return "", err
 	}
 	pub := ed25519.NewKeyFromSeed(privKey).Public().(ed25519.PublicKey)
+	return base58Encode(btcAlphabet, []byte(pub)), nil
+}
+
+func SolanaAddressFromPrivKey(hexPrivKey string) (string, error) {
+	b, err := hex.DecodeString(hexPrivKey)
+	if err != nil {
+		return "", err
+	}
+	pub := ed25519.NewKeyFromSeed(b).Public().(ed25519.PublicKey)
 	return base58Encode(btcAlphabet, []byte(pub)), nil
 }
 

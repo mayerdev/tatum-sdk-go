@@ -65,6 +65,60 @@ func TestGenerateWallet_Solana(t *testing.T) {
 	if w.Mnemonic == "" || w.XPub == "" {
 		t.Error("GenerateWallet(Solana): empty Mnemonic or XPub")
 	}
+	addr, err := DeriveAddress(w.XPub, 0, chain.Solana)
+	if err != nil {
+		t.Fatalf("DeriveAddress(Solana, 0): %v", err)
+	}
+	if addr != w.XPub {
+		t.Errorf("DeriveAddress(xpub, 0) = %s, want xpub %s", addr, w.XPub)
+	}
+}
+
+func TestSolana_IndexBehavior(t *testing.T) {
+	w, err := GenerateWallet(chain.Solana)
+	if err != nil {
+		t.Fatalf("GenerateWallet(Solana): %v", err)
+	}
+
+	addr0, err := DeriveAddress(w.XPub, 0, chain.Solana)
+	if err != nil {
+		t.Fatalf("DeriveAddress(Solana, 0): %v", err)
+	}
+	if addr0 != w.XPub {
+		t.Errorf("DeriveAddress(xpub, 0) = %s, want %s", addr0, w.XPub)
+	}
+
+	_, err = DeriveAddress(w.XPub, 1, chain.Solana)
+	if !errors.Is(err, ErrSolanaPublicDerivation) {
+		t.Errorf("DeriveAddress(Solana, 1): want ErrSolanaPublicDerivation, got %v", err)
+	}
+
+	privKey0, err := DerivePrivateKey(w.Mnemonic, 0, chain.Solana)
+	if err != nil {
+		t.Fatalf("DerivePrivateKey(Solana, 0): %v", err)
+	}
+	derivedAddr0, err := SolanaAddressFromPrivKey(privKey0)
+	if err != nil {
+		t.Fatalf("SolanaAddressFromPrivKey: %v", err)
+	}
+	if derivedAddr0 != w.XPub {
+		t.Errorf("SolanaAddressFromPrivKey at index 0 = %s, want xpub %s", derivedAddr0, w.XPub)
+	}
+
+	privKey1, err := DerivePrivateKey(w.Mnemonic, 1, chain.Solana)
+	if err != nil {
+		t.Fatalf("DerivePrivateKey(Solana, 1): %v", err)
+	}
+	if privKey1 == privKey0 {
+		t.Error("DerivePrivateKey index 0 and 1 returned identical keys")
+	}
+	derivedAddr1, err := SolanaAddressFromPrivKey(privKey1)
+	if err != nil {
+		t.Fatalf("SolanaAddressFromPrivKey index 1: %v", err)
+	}
+	if derivedAddr1 == derivedAddr0 {
+		t.Error("address at index 0 and 1 are the same")
+	}
 }
 
 func TestDeriveAddress_ETH_KnownVector(t *testing.T) {
