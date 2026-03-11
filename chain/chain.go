@@ -53,6 +53,8 @@ const (
 	Linea           Chain = "linea"
 	Blast           Chain = "blast"
 	ZkSync          Chain = "zksync"
+	EGLD            Chain = "egld"
+	XDC             Chain = "xdc"
 )
 
 const (

@@ -157,6 +157,58 @@ if errors.Is(err, keygen.ErrUnsupportedChain) {
 }
 ```
 
+### WalletGen (API-based)
+
+Generate wallets and derive addresses/keys via Tatum's REST API (server-side, 17 chains).
+
+**Generate wallet:**
+
+```go
+w, err := client.WalletGen.GenerateWallet(ctx, chain.Ethereum)
+// w.Mnemonic — "word1 word2 ... word24"
+// w.XPub     — "xpub6Ev..."
+
+// For Solana: w.Address, w.PrivateKey
+// For Algorand: w.Address, w.Secret
+```
+
+**Derive address** from xpub and index:
+
+```go
+addr, err := client.WalletGen.DeriveAddress(ctx, chain.Bitcoin, xpub, 0)
+```
+
+**Derive private key** from mnemonic and index:
+
+```go
+key, err := client.WalletGen.DerivePrivateKey(ctx, chain.Ethereum, mnemonic, 0)
+if errors.Is(err, walletgen.ErrNotSupported) {
+    // chain does not support this operation
+}
+```
+
+**Supported chains and operations:**
+
+| Chain | `GenerateWallet` | `DeriveAddress` | `DerivePrivateKey` |
+|-------|:----------------:|:---------------:|:-----------------:|
+| `chain.Bitcoin` | ✓ | ✓ | ✓ |
+| `chain.BitcoinCash` | ✓ | ✓ | ✓ |
+| `chain.Dogecoin` | ✓ | ✓ | ✓ |
+| `chain.Litecoin` | ✓ | ✓ | ✓ |
+| `chain.Ethereum` | ✓ | ✓ | ✓ |
+| `chain.BNBSmartChain` | ✓ | ✓ | ✓ |
+| `chain.Polygon` | ✓ | ✓ | ✓ |
+| `chain.Klaytn` | ✓ | ✓ | ✓ |
+| `chain.KuCoin` | ✓ | ✓ | ✓ |
+| `chain.VeChain` | ✓ | ✓ | ✓ |
+| `chain.Harmony` | ✓ | ✓ | ✓ |
+| `chain.Tron` | ✓ | ✓ | ✓ |
+| `chain.XDC` | ✓ | ✓ | ✓ |
+| `chain.Solana` | ✓ | — | — |
+| `chain.Algorand` | ✓ | — | — |
+| `chain.Flow` | ✓ | — | — |
+| `chain.EGLD` | ✓ | — | ✓ |
+
 ### Wallet
 
 ```go

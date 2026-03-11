@@ -15,6 +15,7 @@ import (
 	"gitlab.com/mayerdev/tatum-sdk-go/token"
 	"gitlab.com/mayerdev/tatum-sdk-go/transactions"
 	"gitlab.com/mayerdev/tatum-sdk-go/wallet"
+	"gitlab.com/mayerdev/tatum-sdk-go/walletgen"
 )
 
 const defaultBaseURL = "https://api.tatum.io"
@@ -33,6 +34,7 @@ type Client struct {
 	Security      security.Service
 	Notifications notifications.Service
 	RPC           rpc.Service
+	WalletGen     walletgen.Service
 }
 
 func NewClient(apiKey string, opts ...ClientOption) (*Client, error) {
@@ -71,5 +73,6 @@ func NewClient(apiKey string, opts ...ClientOption) (*Client, error) {
 		Security:      security.NewService(hc),
 		Notifications: notifications.NewService(hc),
 		RPC:           rpc.NewService(hc, gatewayTpl),
+		WalletGen:     walletgen.NewService(hc),
 	}, nil
 }
