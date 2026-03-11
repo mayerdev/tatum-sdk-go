@@ -2,6 +2,24 @@ package notifications
 
 import "net/url"
 
+type EnableHMACRequest struct {
+	HMACSecret string `json:"hmacSecret"`
+}
+
+type WebhookPayload struct {
+	Address          string  `json:"address"`
+	Amount           string  `json:"amount"`
+	CounterAddress   string  `json:"counterAddress"`
+	Asset            string  `json:"asset"`
+	BlockNumber      int64   `json:"blockNumber"`
+	TxID             string  `json:"txId"`
+	Type             string  `json:"type"`
+	TokenID          *string `json:"tokenId"`
+	ContractAddress  string  `json:"contractAddress"`
+	Chain            string  `json:"chain"`
+	SubscriptionType string  `json:"subscriptionType"`
+}
+
 type CreateRequest struct {
 	Type    string `json:"type"`
 	Address string `json:"address"`

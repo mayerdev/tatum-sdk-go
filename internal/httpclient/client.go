@@ -63,6 +63,14 @@ func (c *Client) Delete(ctx context.Context, path string, query url.Values, out 
 	return c.do(ctx, http.MethodDelete, u, nil, out)
 }
 
+func (c *Client) Put(ctx context.Context, path string, query url.Values, body any, out any) error {
+	u := c.cfg.BaseURL + path
+	if len(query) > 0 {
+		u += "?" + query.Encode()
+	}
+	return c.do(ctx, http.MethodPut, u, body, out)
+}
+
 func (c *Client) PostAbsolute(ctx context.Context, absoluteURL string, body any, out any) error {
 	return c.do(ctx, http.MethodPost, absoluteURL, body, out)
 }

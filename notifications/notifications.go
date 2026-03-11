@@ -12,6 +12,8 @@ type Service interface {
 	List(ctx context.Context, req ListRequest) ([]Notification, error)
 	Cancel(ctx context.Context, req CancelRequest) error
 	GetWebhookLogs(ctx context.Context, req WebhookLogsRequest) ([]WebhookLog, error)
+	EnableHMAC(ctx context.Context, req EnableHMACRequest) error
+	DisableHMAC(ctx context.Context) error
 }
 
 type service struct {
@@ -39,6 +41,14 @@ func (s *service) Cancel(ctx context.Context, req CancelRequest) error {
 func (s *service) GetWebhookLogs(ctx context.Context, req WebhookLogsRequest) ([]WebhookLog, error) {
 	var out []WebhookLog
 	return out, s.c.Get(ctx, "/v4/notifications/webhooks", req.toQuery(), &out)
+}
+
+func (s *service) EnableHMAC(ctx context.Context, req EnableHMACRequest) error {
+	return s.c.Put(ctx, "/v4/subscription", nil, req, nil)
+}
+
+func (s *service) DisableHMAC(ctx context.Context) error {
+	return s.c.Delete(ctx, "/v4/subscription", nil, nil)
 }
 
 func itoa(n int) string {
