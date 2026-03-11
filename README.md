@@ -34,6 +34,118 @@ if err != nil {
 
 ## Services
 
+### Keygen (offline)
+
+HD wallet generation, address and private key derivation — fully offline, no API calls.
+
+```go
+import (
+    "gitlab.com/mayerdev/tatum-sdk-go/chain"
+    "gitlab.com/mayerdev/tatum-sdk-go/keygen"
+)
+```
+
+**Generate wallet** — returns a 24-word mnemonic and xpub:
+
+```go
+w, err := keygen.GenerateWallet(chain.Ethereum)
+// w.Mnemonic — "word1 word2 ... word24"
+// w.XPub     — "xpub6Ev..."
+```
+
+**Derive address** from xpub and index:
+
+```go
+addr, err := keygen.DeriveAddress(w.XPub, 0, chain.Ethereum)
+```
+
+**Derive private key** from mnemonic and index (EVM → 0x-prefixed hex, UTXO → WIF):
+
+```go
+privKey, err := keygen.DerivePrivateKey(w.Mnemonic, 0, chain.Ethereum)
+```
+
+**Supported networks:**
+
+| Network | Chain | Address format | Key format |
+|---------|-------|----------------|------------|
+| Ethereum | `chain.Ethereum` | `0x...` | `0x...` hex |
+| Polygon | `chain.Polygon` | `0x...` | `0x...` hex |
+| BNB Smart Chain | `chain.BNBSmartChain` | `0x...` | `0x...` hex |
+| Avalanche | `chain.Avalanche` | `0x...` | `0x...` hex |
+| Arbitrum | `chain.Arbitrum` | `0x...` | `0x...` hex |
+| Optimism | `chain.Optimism` | `0x...` | `0x...` hex |
+| Base | `chain.Base` | `0x...` | `0x...` hex |
+| zkSync | `chain.ZkSync` | `0x...` | `0x...` hex |
+| Linea | `chain.Linea` | `0x...` | `0x...` hex |
+| Scroll | `chain.Scroll` | `0x...` | `0x...` hex |
+| Blast | `chain.Blast` | `0x...` | `0x...` hex |
+| Fantom | `chain.Fantom` | `0x...` | `0x...` hex |
+| Cronos | `chain.Cronos` | `0x...` | `0x...` hex |
+| Celo | `chain.Celo` | `0x...` | `0x...` hex |
+| Gnosis | `chain.Gnosis` | `0x...` | `0x...` hex |
+| Harmony | `chain.Harmony` | `0x...` | `0x...` hex |
+| Aurora | `chain.Aurora` | `0x...` | `0x...` hex |
+| Heco | `chain.Heco` | `0x...` | `0x...` hex |
+| KuCoin | `chain.KuCoin` | `0x...` | `0x...` hex |
+| Klaytn | `chain.Klaytn` | `0x...` | `0x...` hex |
+| Palm | `chain.Palm` | `0x...` | `0x...` hex |
+| Ethereum Classic | `chain.EthereumClassic` | `0x...` | `0x...` hex |
+| VeChain | `chain.VeChain` | `0x...` | `0x...` hex |
+| Hedera | `chain.Hedera` | `0x...` | `0x...` hex |
+| Chiliz | `chain.Chiliz` | `0x...` | `0x...` hex |
+| Theta | `chain.Theta` | `0x...` | `0x...` hex |
+| Tron | `chain.Tron` | `T...` | `0x...` hex |
+| Bitcoin | `chain.Bitcoin` | `1...` | WIF |
+| Litecoin | `chain.Litecoin` | `L...` | WIF |
+| Dogecoin | `chain.Dogecoin` | `D...` | WIF |
+| Bitcoin Cash | `chain.BitcoinCash` | `1...` | WIF |
+| Dash | `chain.Dash` | `X...` | WIF |
+| ZCash | `chain.ZCash` | `t1...` | WIF |
+| Solana | `chain.Solana` | base58 pubkey | hex |
+| XRP | `chain.XRP` | `r...` | `0x...` hex |
+
+```go
+chains := []chain.Chain{
+    chain.Ethereum, chain.Polygon, chain.BNBSmartChain, chain.Avalanche,
+    chain.Arbitrum, chain.Optimism, chain.Base, chain.ZkSync,
+    chain.Linea, chain.Scroll, chain.Blast, chain.Fantom,
+    chain.Cronos, chain.Celo, chain.Gnosis, chain.Harmony,
+    chain.Aurora, chain.Heco, chain.KuCoin, chain.Klaytn,
+    chain.Palm, chain.EthereumClassic, chain.VeChain, chain.Hedera,
+    chain.Chiliz, chain.Theta, chain.Tron,
+    chain.Bitcoin, chain.Litecoin, chain.Dogecoin, chain.BitcoinCash,
+    chain.Dash, chain.ZCash,
+    chain.Solana, chain.XRP,
+}
+
+for _, c := range chains {
+    w, err := keygen.GenerateWallet(c)
+    if err != nil {
+        log.Fatal(err)
+    }
+    addr, err := keygen.DeriveAddress(w.XPub, 0, c)
+    if err != nil {
+        log.Fatal(err)
+    }
+    privKey, err := keygen.DerivePrivateKey(w.Mnemonic, 0, c)
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("chain=%s\n  mnemonic=%s\n  xpub=%s\n  address=%s\n  privkey=%s\n\n",
+        c, w.Mnemonic, w.XPub, addr, privKey)
+}
+```
+
+Unsupported networks return `keygen.ErrUnsupportedChain`:
+
+```go
+_, err := keygen.GenerateWallet(chain.Cardano)
+if errors.Is(err, keygen.ErrUnsupportedChain) {
+    // handle unsupported chain
+}
+```
+
 ### Wallet
 
 ```go
