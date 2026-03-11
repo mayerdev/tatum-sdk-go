@@ -34,9 +34,15 @@ func (s *service) DeriveAddress(ctx context.Context, c chain.Chain, xpub string,
 	if !supportsAddressDerivation(c) {
 		return "", ErrNotSupported
 	}
-	path, _ := chainPath(c)
+	var apiPath string
+	if tpl, ok := customAddressPath[c]; ok {
+		apiPath = fmt.Sprintf(tpl, xpub, index)
+	} else {
+		path, _ := chainPath(c)
+		apiPath = fmt.Sprintf("/v3/%s/address/%s/%d", path, xpub, index)
+	}
 	var out addressResponse
-	err := s.c.Get(ctx, fmt.Sprintf("/v3/%s/address/%s/%d", path, xpub, index), nil, &out)
+	err := s.c.Get(ctx, apiPath, nil, &out)
 	return out.Address, err
 }
 
@@ -48,5 +54,5 @@ func (s *service) DerivePrivateKey(ctx context.Context, c chain.Chain, mnemonic 
 	body := privKeyRequest{Mnemonic: mnemonic, Index: index}
 	var out privKeyResponse
 	err := s.c.Post(ctx, fmt.Sprintf("/v3/%s/wallet/priv", path), nil, body, &out)
-	return out.Key, err
+	return out.value(), err
 }

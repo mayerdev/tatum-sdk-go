@@ -24,7 +24,15 @@ type privKeyRequest struct {
 }
 
 type privKeyResponse struct {
-	Key string `json:"key"`
+	Key        string `json:"key"`
+	PrivateKey string `json:"privateKey"`
+}
+
+func (r privKeyResponse) value() string {
+	if r.PrivateKey != "" {
+		return r.PrivateKey
+	}
+	return r.Key
 }
 
 var apiPaths = map[chain.Chain]string{
@@ -58,14 +66,16 @@ func chainPath(c chain.Chain) (string, error) {
 var noAddressDerivation = map[chain.Chain]bool{
 	chain.Solana:   true,
 	chain.Algorand: true,
-	chain.Flow:     true,
 	chain.EGLD:     true,
 }
 
 var noPrivKeyDerivation = map[chain.Chain]bool{
 	chain.Solana:   true,
 	chain.Algorand: true,
-	chain.Flow:     true,
+}
+
+var customAddressPath = map[chain.Chain]string{
+	chain.Flow: "/v3/flow/pubkey/%s/%d",
 }
 
 func supportsAddressDerivation(c chain.Chain) bool { return !noAddressDerivation[c] }

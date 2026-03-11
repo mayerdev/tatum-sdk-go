@@ -206,8 +206,13 @@ if errors.Is(err, walletgen.ErrNotSupported) {
 | `chain.XDC` | ✓ | ✓ | ✓ |
 | `chain.Solana` | ✓ | — | — |
 | `chain.Algorand` | ✓ | — | — |
-| `chain.Flow` | ✓ | — | — |
+| `chain.Flow` | ✓ | ✓ | ✓ |
 | `chain.EGLD` | ✓ | — | ✓ |
+
+> **Flow address derivation:** Flow uses a different API path for address derivation
+> (`/v3/flow/pubkey/{xpub}/{index}` instead of the standard `/v3/{chain}/address/{xpub}/{index}`).
+> `DeriveAddress` handles this automatically. The wallet response for Flow contains `w.Address`
+> (the public key / address). `DerivePrivateKey` returns the `privateKey` field from the API response.
 
 ### Wallet
 
@@ -367,6 +372,8 @@ if check.Malicious {
 
 ### Notifications
 
+**Subscribe / unsubscribe:**
+
 ```go
 sub, err := client.Notifications.Create(ctx, notifications.CreateRequest{
     Type:    "ADDRESS_TRANSACTION",
@@ -379,6 +386,58 @@ list, err := client.Notifications.List(ctx, notifications.ListRequest{PageSize: 
 
 err = client.Notifications.Cancel(ctx, notifications.CancelRequest{ID: sub.ID})
 ```
+
+**HMAC webhook authentication:**
+
+Enable HMAC signing so every webhook from Tatum contains an `x-payload-hash` header:
+
+```go
+err = client.Notifications.EnableHMAC(ctx, notifications.EnableHMACRequest{
+    HMACSecret: "c354b83b-d31b-4dda-9bab-d6a67715a1ed",
+})
+
+err = client.Notifications.DisableHMAC(ctx)
+```
+
+**Parsing and verifying incoming webhooks:**
+
+```go
+import "gitlab.com/mayerdev/tatum-sdk-go/notifications"
+
+// In your HTTP handler:
+body, _ := io.ReadAll(r.Body)
+xPayloadHash := r.Header.Get("x-payload-hash")
+
+payload, valid, err := notifications.ParseAndVerifyWebhook(body, xPayloadHash, "your-hmac-secret")
+if err != nil {
+    http.Error(w, "bad request", http.StatusBadRequest)
+    return
+}
+if !valid {
+    http.Error(w, "invalid signature", http.StatusUnauthorized)
+    return
+}
+
+fmt.Println(payload.Chain, payload.Address, payload.Amount, payload.TxID)
+```
+
+Pass an empty string as `hmacSecret` to skip signature verification and only parse the payload.
+
+`WebhookPayload` fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `Address` | `string` | Subscribed address |
+| `Amount` | `string` | Transfer amount |
+| `CounterAddress` | `string` | Counterpart address |
+| `Asset` | `string` | Asset symbol |
+| `BlockNumber` | `int64` | Block number |
+| `TxID` | `string` | Transaction hash |
+| `Type` | `string` | `"native"` or `"token"` |
+| `TokenID` | `*string` | Token ID (nullable) |
+| `ContractAddress` | `string` | Token contract address |
+| `Chain` | `string` | Blockchain identifier |
+| `SubscriptionType` | `string` | e.g. `"ADDRESS_EVENT"` |
 
 ### RPC Gateway
 
