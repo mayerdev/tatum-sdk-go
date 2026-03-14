@@ -8,7 +8,8 @@ import (
 )
 
 type Service interface {
-	Create(ctx context.Context, req CreateRequest) (*Notification, error)
+	CreateV3(ctx context.Context, req CreateRequest) (*Notification, error)
+	SubscribeAddressTransactions(ctx context.Context, attr CreateAddressTransactionsSubscription) (*Notification, error)
 	List(ctx context.Context, req ListRequest) ([]Notification, error)
 	Cancel(ctx context.Context, req CancelRequest) error
 	GetWebhookLogs(ctx context.Context, req WebhookLogsRequest) ([]WebhookLog, error)
@@ -24,9 +25,16 @@ func NewService(c *httpclient.Client) Service {
 	return &service{c: c}
 }
 
-func (s *service) Create(ctx context.Context, req CreateRequest) (*Notification, error) {
+func (s *service) CreateV3(ctx context.Context, req CreateRequest) (*Notification, error) {
 	var out Notification
-	return &out, s.c.Post(ctx, "/v4/notifications/subscribe", nil, req, &out)
+	return &out, s.c.Post(ctx, "/v3/subscription", nil, req, &out)
+}
+
+func (s *service) SubscribeAddressTransactions(ctx context.Context, attr CreateAddressTransactionsSubscription) (*Notification, error) {
+	return s.CreateV3(ctx, CreateRequest{
+		Type: "ADDRESS_TRANSACTION",
+		Attr: attr,
+	})
 }
 
 func (s *service) List(ctx context.Context, req ListRequest) ([]Notification, error) {

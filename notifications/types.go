@@ -1,30 +1,48 @@
 package notifications
 
-import "net/url"
+import (
+	"net/url"
+
+	"gitlab.com/mayerdev/tatum-sdk-go/chain"
+)
 
 type EnableHMACRequest struct {
 	HMACSecret string `json:"hmacSecret"`
 }
 
+type TransferMeta struct {
+	Native       bool
+	Asset        string
+	AssetAddress string
+	Sender       string // can be empty
+	Receiver     string
+}
+
 type WebhookPayload struct {
-	Address          string  `json:"address"`
-	Amount           string  `json:"amount"`
-	CounterAddress   string  `json:"counterAddress"`
-	Asset            string  `json:"asset"`
-	BlockNumber      int64   `json:"blockNumber"`
-	TxID             string  `json:"txId"`
-	Type             string  `json:"type"`
-	TokenID          *string `json:"tokenId"`
-	ContractAddress  string  `json:"contractAddress"`
-	Chain            string  `json:"chain"`
-	SubscriptionType string  `json:"subscriptionType"`
+	Address          string             `json:"address"`
+	Amount           string             `json:"amount"`
+	CounterAddress   string             `json:"counterAddress"`
+	Asset            string             `json:"asset"`
+	BlockNumber      int64              `json:"blockNumber"`
+	TxID             string             `json:"txId"`
+	Type             string             `json:"type"`
+	TokenID          *string            `json:"tokenId"`
+	ContractAddress  string             `json:"contractAddress"`
+	Chain            chain.ChainNetwork `json:"chain"`
+	SubscriptionType string             `json:"subscriptionType"`
+
+	Transfers []TransferMeta
 }
 
 type CreateRequest struct {
-	Type    string `json:"type"`
-	Address string `json:"address"`
-	Chain   string `json:"chain"`
-	URL     string `json:"url"`
+	Type string `json:"type"`
+	Attr any    `json:"attr"`
+}
+
+type CreateAddressTransactionsSubscription struct {
+	Address      string             `json:"address"`
+	ChainNetwork chain.ChainNetwork `json:"chain"`
+	URL          string             `json:"url"`
 }
 
 type Notification struct {

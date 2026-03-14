@@ -1,9 +1,18 @@
 package chain
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Chain string
 type Network string
+type ChainNetwork string
+
+func (cn ChainNetwork) Split() (Chain, Network) {
+	parts := strings.SplitN(string(cn), "-", 2)
+	return Chain(parts[0]), Network(parts[1])
+}
 
 const (
 	Ethereum        Chain = "ethereum"
@@ -62,6 +71,40 @@ const (
 	Testnet Network = "testnet"
 )
 
-func RPCGatewayURL(c Chain, n Network) string {
-	return fmt.Sprintf("https://%s-%s.gateway.tatum.io/", c, n)
+func (chainID Chain) On(network Network) ChainNetwork {
+	if chainID == Ethereum && network == Testnet {
+		return ChainNetwork("ethereum-sepolia")
+	}
+
+	return ChainNetwork(fmt.Sprintf("%s-%s", chainID, network))
+}
+
+func (chainID Chain) IsEVM() bool {
+	return chainID == Ethereum ||
+		chainID == Polygon ||
+		chainID == BNBSmartChain ||
+		chainID == Avalanche ||
+		chainID == Optimism ||
+		chainID == Arbitrum ||
+		chainID == Cronos ||
+		chainID == Klaytn ||
+		chainID == Oasis ||
+		chainID == KuCoin ||
+		chainID == Aurora ||
+		chainID == Celo ||
+		chainID == Heco ||
+		chainID == Palm ||
+		chainID == Gnosis ||
+		chainID == Fantom ||
+		chainID == Flare ||
+		chainID == EthereumClassic ||
+		chainID == Base ||
+		chainID == Scroll ||
+		chainID == Linea ||
+		chainID == Blast ||
+		chainID == ZkSync
+}
+
+func RPCGatewayURL(cn ChainNetwork) string {
+	return fmt.Sprintf("https://%s.gateway.tatum.io/", cn)
 }

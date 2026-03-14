@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 )
 
 func decodeResponse(resp *http.Response, out any) error {
@@ -51,8 +52,22 @@ type APIError struct {
 }
 
 func (e *APIError) Error() string {
-	if e.Message != "" {
-		return fmt.Sprintf("tatum api error %d: %s", e.StatusCode, e.Message)
+	parts := []string{
+		fmt.Sprintf("tatum error %d", e.StatusCode),
 	}
-	return fmt.Sprintf("tatum api error %d", e.StatusCode)
+
+	if e.ErrorCode != "" {
+		parts = append(parts, " (", e.ErrorCode, ")")
+	}
+
+	if e.Message != "" {
+		filteredMessage := strings.Replace(e.Message, " Please see data for additional information.", "", 1)
+		parts = append(parts, ": ", filteredMessage)
+	}
+
+	if e.Data != nil {
+		parts = append(parts, fmt.Sprintf(" Data: %v", e.Data))
+	}
+
+	return strings.Join(parts, "")
 }
