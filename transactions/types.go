@@ -44,3 +44,36 @@ func (r ByHashRequest) toQuery() url.Values {
 	q.Set("chain", r.Chain)
 	return q
 }
+
+type SimpleUTXOInput struct {
+	Address    string `json:"address"`
+	PrivateKey string `json:"privateKey"`
+}
+
+type SimpleUTXOOutput struct {
+	Address string  `json:"address"`
+	Value   float64 `json:"value"`
+}
+
+type SimpleUTXORequest struct {
+	From          []SimpleUTXOInput  `json:"from"`
+	To            []SimpleUTXOOutput `json:"to"`
+	Fee           *string            `json:"fee"`
+	ChangeAddress *string            `json:"changeAddress"`
+}
+
+type SendNativeRequest struct {
+	From           string
+	FromPrivateKey string
+	To             string
+	Amount         string
+}
+
+type SendTokensRequest struct {
+	FromPrivateKey string
+	To             string
+	Currency       string
+	Amount         string
+	TokenAddress   string
+	FeeLimit       string
+}

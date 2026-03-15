@@ -146,7 +146,7 @@ func TestDeriveAddress(t *testing.T) {
 		{"Dash", chain.Dash, coinDASH, "X"},
 		{"ZCash", chain.ZCash, coinZEC, "t1"},
 		{"Tron", chain.Tron, coinTRON, "T"},
-		{"XRP", chain.XRP, coinXRP, "r"},
+		{"Ripple", chain.Ripple, coinXRP, "r"},
 	}
 
 	for _, tt := range tests {

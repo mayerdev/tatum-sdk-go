@@ -101,3 +101,31 @@ func (r WebhookLogsRequest) toQuery() url.Values {
 	}
 	return q
 }
+
+type SubscriptionsFilter struct {
+	PageSize uint8 // 1..50
+	Offset   uint
+	Address  *string
+}
+
+func (filter SubscriptionsFilter) toQuery() url.Values {
+	query := url.Values{}
+	query.Set("pageSize", itoa(int(filter.PageSize)))
+
+	if filter.Offset > 0 {
+		query.Set("offset", itoa(int(filter.Offset)))
+	}
+
+	if filter.Address != nil {
+		query.Set("address", *filter.Address)
+	}
+
+	return query
+}
+
+type SubscriptionInfo struct {
+	Type string  `json:"type"`
+	ID   string  `json:"id"`
+	Attr any     `json:"attr"`
+	Note *string `json:"note;omitempty"`
+}

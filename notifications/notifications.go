@@ -10,6 +10,12 @@ import (
 type Service interface {
 	CreateV3(ctx context.Context, req CreateRequest) (*Notification, error)
 	SubscribeAddressTransactions(ctx context.Context, attr CreateAddressTransactionsSubscription) (*Notification, error)
+
+	GetActiveV3(ctx context.Context, filter SubscriptionsFilter) ([]SubscriptionInfo, error)
+	GetAllActiveV3(ctx context.Context, address *string) ([]SubscriptionInfo, error)
+
+	CancelV3(ctx context.Context, id string) error
+
 	List(ctx context.Context, req ListRequest) ([]Notification, error)
 	Cancel(ctx context.Context, req CancelRequest) error
 	GetWebhookLogs(ctx context.Context, req WebhookLogsRequest) ([]WebhookLog, error)
@@ -35,6 +41,43 @@ func (s *service) SubscribeAddressTransactions(ctx context.Context, attr CreateA
 		Type: "ADDRESS_TRANSACTION",
 		Attr: attr,
 	})
+}
+
+func (s *service) GetActiveV3(ctx context.Context, filter SubscriptionsFilter) ([]SubscriptionInfo, error) {
+	out := make([]SubscriptionInfo, 0)
+	return out, s.c.Get(ctx, "/v3/subscription", filter.toQuery(), &out)
+}
+
+func (s *service) GetAllActiveV3(ctx context.Context, address *string) ([]SubscriptionInfo, error) {
+	filter := SubscriptionsFilter{
+		PageSize: 50,
+		Offset:   0,
+		Address:  address,
+	}
+
+	var err error
+	var part []SubscriptionInfo
+
+	result := make([]SubscriptionInfo, 0)
+	for {
+		part, err = s.GetActiveV3(ctx, filter)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(part) == 0 {
+			break
+		}
+
+		result = append(result, part...)
+		filter.Offset += uint(filter.PageSize)
+	}
+
+	return result, nil
+}
+
+func (s *service) CancelV3(ctx context.Context, id string) error {
+	return s.c.Delete(ctx, "/v3/subscription/"+id, nil, nil)
 }
 
 func (s *service) List(ctx context.Context, req ListRequest) ([]Notification, error) {

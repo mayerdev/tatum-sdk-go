@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"gitlab.com/mayerdev/tatum-sdk-go/chain"
 )
@@ -42,7 +43,7 @@ func parseHookTransfers(payload *WebhookPayload) {
 		if payload.Type == "native" {
 			payload.Transfers = append(payload.Transfers, TransferMeta{
 				Native:   true,
-				Asset:    payload.Asset,
+				Asset:    normalizeCurrency(payload.Asset),
 				Sender:   payload.CounterAddress,
 				Receiver: payload.Address,
 			})
@@ -87,7 +88,7 @@ func parseHookTransfers(payload *WebhookPayload) {
 		if payload.Type == "native" {
 			payload.Transfers = append(payload.Transfers, TransferMeta{
 				Native:   true,
-				Asset:    payload.Asset,
+				Asset:    normalizeCurrency(payload.Asset),
 				Receiver: payload.Address,
 			})
 		} else if payload.Type == "token" {
@@ -98,4 +99,13 @@ func parseHookTransfers(payload *WebhookPayload) {
 			})
 		}
 	}
+}
+
+func normalizeCurrency(currency string) string {
+	i := strings.Index(currency, "_")
+	if i != -1 {
+		currency = currency[:i]
+	}
+
+	return currency
 }

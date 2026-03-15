@@ -3,7 +3,7 @@ package tatum_test
 import (
 	"testing"
 
-	tatum "gitlab.com/mayerdev/tatum-sdk-go"
+	"gitlab.com/mayerdev/tatum-sdk-go"
 )
 
 func TestIsNotFound(t *testing.T) {

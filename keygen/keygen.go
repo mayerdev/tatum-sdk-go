@@ -82,7 +82,7 @@ func getChainInfo(c chain.Chain) (chainInfo, error) {
 	switch c {
 	case chain.Ethereum, chain.Polygon, chain.BNBSmartChain, chain.Avalanche,
 		chain.Arbitrum, chain.Optimism, chain.Cronos, chain.Celo, chain.Gnosis,
-		chain.Base, chain.Scroll, chain.Linea, chain.Blast, chain.ZkSync,
+		chain.Base, chain.ZkSync,
 		chain.Fantom, chain.Harmony, chain.Aurora, chain.Heco, chain.KuCoin,
 		chain.Klaytn, chain.Palm, chain.EthereumClassic, chain.VeChain,
 		chain.Hedera, chain.Chiliz, chain.Theta:
@@ -103,7 +103,7 @@ func getChainInfo(c chain.Chain) (chainInfo, error) {
 		return chainInfo{coinType: coinTRON, family: familyTRON}, nil
 	case chain.Solana:
 		return chainInfo{coinType: coinSOL, family: familySOL}, nil
-	case chain.XRP:
+	case chain.Ripple:
 		return chainInfo{coinType: coinXRP, family: familyXRP}, nil
 	default:
 		return chainInfo{}, ErrUnsupportedChain
@@ -266,7 +266,7 @@ func DerivePrivateKey(mnemonic string, index uint32, c chain.Chain) (string, err
 		privKey, err := slip10Derive(seed, []uint32{
 			44 + hardenedOffset,
 			coinSOL + hardenedOffset,
-			uint32(index) + hardenedOffset,
+			index + hardenedOffset,
 			hardenedOffset,
 		})
 		if err != nil {
@@ -403,7 +403,7 @@ func solanaXPub(seed []byte) (string, error) {
 		return "", err
 	}
 	pub := ed25519.NewKeyFromSeed(privKey).Public().(ed25519.PublicKey)
-	return base58Encode(btcAlphabet, []byte(pub)), nil
+	return base58Encode(btcAlphabet, pub), nil
 }
 
 func SolanaAddressFromPrivKey(hexPrivKey string) (string, error) {
@@ -412,7 +412,7 @@ func SolanaAddressFromPrivKey(hexPrivKey string) (string, error) {
 		return "", err
 	}
 	pub := ed25519.NewKeyFromSeed(b).Public().(ed25519.PublicKey)
-	return base58Encode(btcAlphabet, []byte(pub)), nil
+	return base58Encode(btcAlphabet, pub), nil
 }
 
 func zecAddress(hash160 []byte) string {

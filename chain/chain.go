@@ -26,7 +26,7 @@ const (
 	BitcoinCash     Chain = "bch"
 	Dogecoin        Chain = "doge"
 	Cardano         Chain = "cardano"
-	XRP             Chain = "xrp"
+	Ripple          Chain = "xrp"
 	Stellar         Chain = "xlm"
 	Algorand        Chain = "algo"
 	Tezos           Chain = "tezos"
@@ -58,9 +58,6 @@ const (
 	Hedera          Chain = "hbar"
 	Chiliz          Chain = "chz"
 	Base            Chain = "base"
-	Scroll          Chain = "scroll"
-	Linea           Chain = "linea"
-	Blast           Chain = "blast"
 	ZkSync          Chain = "zksync"
 	EGLD            Chain = "egld"
 	XDC             Chain = "xdc"
@@ -73,7 +70,7 @@ const (
 
 func (chainID Chain) On(network Network) ChainNetwork {
 	if chainID == Ethereum && network == Testnet {
-		return ChainNetwork("ethereum-sepolia")
+		return "ethereum-sepolia"
 	}
 
 	return ChainNetwork(fmt.Sprintf("%s-%s", chainID, network))
@@ -99,10 +96,26 @@ func (chainID Chain) IsEVM() bool {
 		chainID == Flare ||
 		chainID == EthereumClassic ||
 		chainID == Base ||
-		chainID == Scroll ||
-		chainID == Linea ||
-		chainID == Blast ||
 		chainID == ZkSync
+}
+
+func (chainID Chain) IsUTXO() bool {
+	return chainID == Bitcoin ||
+		chainID == Litecoin ||
+		chainID == BitcoinCash ||
+		chainID == Dogecoin ||
+		chainID == Dash ||
+		chainID == ZCash ||
+		chainID == Cardano
+}
+
+func (chainID Chain) GetCapabilities() *CapabilitiesInfo {
+	info, ok := capabilities[chainID]
+	if !ok {
+		return nil
+	}
+
+	return &info
 }
 
 func RPCGatewayURL(cn ChainNetwork) string {

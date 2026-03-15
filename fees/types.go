@@ -1,6 +1,9 @@
 package fees
 
-import "net/url"
+import (
+	"net/url"
+	"time"
+)
 
 type EstimateGasRequest struct {
 	Chain string
@@ -29,21 +32,39 @@ type GasEstimate struct {
 	GasPrice string `json:"gasPrice"`
 }
 
-type BlockchainFeeRequest struct {
-	Chain string
-}
+type Priority uint8
 
-func (r BlockchainFeeRequest) toQuery() url.Values {
-	q := url.Values{}
-	q.Set("chain", r.Chain)
-	return q
-}
+const (
+	PriorityFast Priority = iota
+	PriorityMedium
+	PrioritySlow
+)
 
 type BlockchainFee struct {
-	Chain  string `json:"chain"`
-	Fast   string `json:"fast"`
-	Medium string `json:"medium"`
-	Slow   string `json:"slow"`
+	// BTC-like
+	Fast   uint64    `json:"fast"`
+	Medium uint64    `json:"medium"`
+	Slow   uint64    `json:"slow"`
+	Block  int       `json:"block"`
+	Time   time.Time `json:"time"`
+	Weight int       `json:"weight"`
+
+	// EVM
+	GasLimit string `json:"gasLimit"`
+	GasPrice string `json:"gasPrice"` // wei (10^-18 ETH)
+}
+
+func (fee BlockchainFee) Get(kind Priority) uint64 {
+	switch kind {
+	case PriorityFast:
+		return fee.Fast
+	case PriorityMedium:
+		return fee.Medium
+	case PrioritySlow:
+		return fee.Slow
+	default:
+		return 0
+	}
 }
 
 type EstimateFeeRequest struct {
