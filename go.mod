@@ -6,6 +6,7 @@ require (
 	github.com/btcsuite/btcd v0.25.0
 	github.com/btcsuite/btcd/btcutil v1.1.6
 	github.com/ethereum/go-ethereum v1.17.1
+	github.com/shopspring/decimal v1.4.0
 	github.com/tyler-smith/go-bip39 v1.1.0
 )
 

@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"gitlab.com/mayerdev/tatum-sdk-go/internal/httpclient"
+	"gitlab.com/mayerdev/tatum-sdk-go/pager"
 )
 
 type Service interface {
@@ -50,30 +51,12 @@ func (s *service) GetActiveV3(ctx context.Context, filter SubscriptionsFilter) (
 
 func (s *service) GetAllActiveV3(ctx context.Context, address *string) ([]SubscriptionInfo, error) {
 	filter := SubscriptionsFilter{
-		PageSize: 50,
-		Offset:   0,
-		Address:  address,
+		Address: address,
 	}
 
-	var err error
-	var part []SubscriptionInfo
-
-	result := make([]SubscriptionInfo, 0)
-	for {
-		part, err = s.GetActiveV3(ctx, filter)
-		if err != nil {
-			return nil, err
-		}
-
-		if len(part) == 0 {
-			break
-		}
-
-		result = append(result, part...)
-		filter.Offset += uint(filter.PageSize)
-	}
-
-	return result, nil
+	return pager.FetchAll(&filter.Paginated, func() ([]SubscriptionInfo, error) {
+		return s.GetActiveV3(ctx, filter)
+	})
 }
 
 func (s *service) CancelV3(ctx context.Context, id string) error {

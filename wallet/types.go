@@ -1,37 +1,52 @@
 package wallet
 
-import "net/url"
+import (
+	"net/url"
+
+	"github.com/shopspring/decimal"
+	"gitlab.com/mayerdev/tatum-sdk-go/chain"
+	"gitlab.com/mayerdev/tatum-sdk-go/pager"
+)
+
+type PortfolioTokenType string
+
+const (
+	TokenNative      PortfolioTokenType = "native"
+	TokenFungible    PortfolioTokenType = "fungible"
+	TokenMultiAndNFT PortfolioTokenType = "nft,multitoken"
+)
 
 type PortfolioRequest struct {
-	Addresses []string
-	Chain     string
-	PageSize  int
-	Cursor    string
+	Chain           chain.ChainNetwork
+	Addresses       []string // only 1 item allowed
+	TokenTypes      PortfolioTokenType
+	ExcludeMetadata bool
+	pager.Paginated
 }
 
-func (r PortfolioRequest) toQuery() url.Values {
-	q := url.Values{}
-	for _, a := range r.Addresses {
-		q.Add("addresses", a)
+func (req PortfolioRequest) toQuery() url.Values {
+	query := url.Values{}
+	query.Set("chain", string(req.Chain))
+	query.Set("tokenTypes", string(req.TokenTypes))
+
+	for _, a := range req.Addresses {
+		query.Add("addresses", a)
 	}
-	if r.Chain != "" {
-		q.Set("chain", r.Chain)
+
+	if req.ExcludeMetadata {
+		query.Set("excludeMetadata", "true")
 	}
-	if r.PageSize > 0 {
-		q.Set("pageSize", itoa(r.PageSize))
-	}
-	if r.Cursor != "" {
-		q.Set("cursor", r.Cursor)
-	}
-	return q
+
+	req.Paginated.AssignTo(&query)
+	return query
 }
 
 type PortfolioItem struct {
-	Address string  `json:"address"`
-	Chain   string  `json:"chain"`
-	Balance string  `json:"balance"`
-	Asset   string  `json:"asset"`
-	Price   float64 `json:"price"`
+	Address string             `json:"address"`
+	Chain   chain.ChainNetwork `json:"chain"`
+	Balance decimal.Decimal    `json:"balance"`
+	Asset   string             `json:"asset"`
+	Price   float64            `json:"price"`
 }
 
 type BalanceByTimeRequest struct {

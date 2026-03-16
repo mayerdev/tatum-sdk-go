@@ -4,6 +4,7 @@ import (
 	"net/url"
 
 	"gitlab.com/mayerdev/tatum-sdk-go/chain"
+	"gitlab.com/mayerdev/tatum-sdk-go/pager"
 )
 
 type EnableHMACRequest struct {
@@ -30,8 +31,8 @@ type WebhookPayload struct {
 	ContractAddress  string             `json:"contractAddress"`
 	Chain            chain.ChainNetwork `json:"chain"`
 	SubscriptionType string             `json:"subscriptionType"`
-
-	Transfers []TransferMeta
+	Mempool          bool               `json:"mempool"`
+	Transfers        []TransferMeta
 }
 
 type CreateRequest struct {
@@ -103,9 +104,8 @@ func (r WebhookLogsRequest) toQuery() url.Values {
 }
 
 type SubscriptionsFilter struct {
-	PageSize uint8 // 1..50
-	Offset   uint
-	Address  *string
+	Address *string
+	pager.Paginated
 }
 
 func (filter SubscriptionsFilter) toQuery() url.Values {
