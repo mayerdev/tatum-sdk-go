@@ -42,11 +42,17 @@ func (req PortfolioRequest) toQuery() url.Values {
 }
 
 type PortfolioItem struct {
-	Address string             `json:"address"`
-	Chain   chain.ChainNetwork `json:"chain"`
-	Balance decimal.Decimal    `json:"balance"`
-	Asset   string             `json:"asset"`
-	Price   float64            `json:"price"`
+	Address            string             `json:"address"`
+	Chain              chain.ChainNetwork `json:"chain"`
+	Balance            decimal.Decimal    `json:"balance"`
+	DenominatedBalance string             `json:"denominatedBalance"`
+	Decimals           uint               `json:"decimals"`
+	// If empty - check TokenAddress
+	Asset string `json:"asset"`
+	// If empty - check Asset
+	TokenAddress string `json:"tokenAddress"`
+	// Optional
+	Price float64 `json:"price"`
 }
 
 type BalanceByTimeRequest struct {
