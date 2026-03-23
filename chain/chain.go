@@ -71,6 +71,8 @@ const (
 func (chainID Chain) On(network Network) ChainNetwork {
 	if chainID == Ethereum && network == Testnet {
 		return "ethereum-sepolia"
+	} else if chainID == Solana && network == Testnet {
+		return "solana-devnet"
 	}
 
 	return ChainNetwork(fmt.Sprintf("%s-%s", chainID, network))
