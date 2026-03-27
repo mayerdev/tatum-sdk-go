@@ -1,8 +1,6 @@
 package walletgen
 
 import (
-	"fmt"
-
 	"gitlab.com/mayerdev/tatum-sdk-go/chain"
 )
 
@@ -36,31 +34,22 @@ func (r privKeyResponse) value() string {
 }
 
 var apiPaths = map[chain.Chain]string{
-	chain.Bitcoin:       "bitcoin",
-	chain.BitcoinCash:   "bcash",
-	chain.Dogecoin:      "dogecoin",
-	chain.Litecoin:      "litecoin",
-	chain.Ethereum:      "ethereum",
-	chain.BNBSmartChain: "bsc",
-	chain.Polygon:       "polygon",
-	chain.Klaytn:        "klaytn",
-	chain.KuCoin:        "kcs",
-	chain.VeChain:       "vet",
-	chain.Harmony:       "one",
-	chain.Tron:          "tron",
-	chain.Algorand:      "algorand",
-	chain.Solana:        "solana",
-	chain.Flow:          "flow",
-	chain.EGLD:          "egld",
-	chain.XDC:           "xdc",
+	chain.BitcoinCash: "bcash",
+	chain.Dogecoin:    "dogecoin",
+	chain.KuCoin:      "kcs",
+	chain.Algorand:    "algorand",
+	chain.Arbitrum:    "arb",
+	chain.Avalanche:   "avalanche",
+	chain.Fantom:      "fantom",
 }
 
-func chainPath(c chain.Chain) (string, error) {
+func chainPath(c chain.Chain) string {
 	p, ok := apiPaths[c]
 	if !ok {
-		return "", fmt.Errorf("walletgen: unsupported chain %q", c)
+		return string(c)
 	}
-	return p, nil
+
+	return p
 }
 
 var noAddressDerivation = map[chain.Chain]bool{

@@ -22,12 +22,8 @@ type service struct{ c *httpclient.Client }
 func NewService(c *httpclient.Client) Service { return &service{c: c} }
 
 func (s *service) GenerateWallet(ctx context.Context, c chain.Chain) (*WalletResponse, error) {
-	path, err := chainPath(c)
-	if err != nil {
-		return nil, err
-	}
 	var out WalletResponse
-	return &out, s.c.Get(ctx, fmt.Sprintf("/v3/%s/wallet", path), nil, &out)
+	return &out, s.c.Get(ctx, fmt.Sprintf("/v3/%s/wallet", chainPath(c)), nil, &out)
 }
 
 func (s *service) DeriveAddress(ctx context.Context, c chain.Chain, xpub string, index uint32) (string, error) {
@@ -38,9 +34,9 @@ func (s *service) DeriveAddress(ctx context.Context, c chain.Chain, xpub string,
 	if tpl, ok := customAddressPath[c]; ok {
 		apiPath = fmt.Sprintf(tpl, xpub, index)
 	} else {
-		path, _ := chainPath(c)
-		apiPath = fmt.Sprintf("/v3/%s/address/%s/%d", path, xpub, index)
+		apiPath = fmt.Sprintf("/v3/%s/address/%s/%d", chainPath(c), xpub, index)
 	}
+
 	var out addressResponse
 	err := s.c.Get(ctx, apiPath, nil, &out)
 	return out.Address, err
@@ -50,9 +46,9 @@ func (s *service) DerivePrivateKey(ctx context.Context, c chain.Chain, mnemonic 
 	if !supportsPrivKeyDerivation(c) {
 		return "", ErrNotSupported
 	}
-	path, _ := chainPath(c)
+
 	body := privKeyRequest{Mnemonic: mnemonic, Index: index}
 	var out privKeyResponse
-	err := s.c.Post(ctx, fmt.Sprintf("/v3/%s/wallet/priv", path), nil, body, &out)
+	err := s.c.Post(ctx, fmt.Sprintf("/v3/%s/wallet/priv", chainPath(c)), nil, body, &out)
 	return out.value(), err
 }
