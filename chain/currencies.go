@@ -2,94 +2,98 @@ package chain
 
 func (chainID Chain) GetNativeCurrency() string {
 	switch chainID {
-	case Bitcoin:
-		return "BTC"
-	case Litecoin:
-		return "LTC"
-	case BitcoinCash:
-		return "BCH"
-	case Dogecoin:
-		return "DOGE"
-	case Dash:
-		return "DASH"
-	case ZCash:
-		return "ZEC"
-	case Stacks:
-		return "STX"
-	case Horizen:
-		return "ZEN"
-	case Monero:
-		return "XMR"
-	case Ethereum:
-		return "ETH"
-	case Polygon:
-		return "MATIC"
-	case BNBSmartChain:
-		return "BNB"
-	case Avalanche:
-		return "AVAX"
-	case Optimism:
-		return "ETH"
+	case Algorand:
+		return "ALGO"
 	case Arbitrum:
 		return "ETH"
-	case Cronos:
-		return "CRO"
-	case Klaytn:
-		return "KLAY"
-	case Oasis:
-		return "ROSE"
-	case KuCoin:
-		return "KCS"
 	case Aurora:
 		return "ETH"
+	case Avalanche:
+		return "AVAX"
+	case BNBSmartChain:
+		return "BNB"
+	case Base:
+		return "ETH"
+	case Bitcoin:
+		return "BTC"
+	case BitcoinCash:
+		return "BCH"
+	case Cardano:
+		return "ADA"
 	case Celo:
 		return "CELO"
-	case Heco:
-		return "HT"
-	case Palm:
-		return "PALM"
-	case Gnosis:
-		return "xDAI"
+	case Chiliz:
+		return "CHZ"
+	case Cronos:
+		return "CRO"
+	case Dash:
+		return "DASH"
+	case Dogecoin:
+		return "DOGE"
+	case EGLD:
+		return "EGLD"
+	case Ethereum:
+		return "ETH"
+	case EthereumClassic:
+		return "ETC"
 	case Fantom:
 		return "FTM"
 	case Flare:
 		return "FLR"
-	case EthereumClassic:
-		return "ETC"
-	case Base:
-		return "ETH"
-	case ZkSync:
-		return "ETH"
-	case XDC:
-		return "XDC"
-	case Chiliz:
-		return "CHZ"
-	case VeChain:
-		return "VET"
-	case IoTeX:
-		return "IOTX"
-	case Harmony:
-		return "ONE"
-	case Hedera:
-		return "HBAR"
-	case EGLD:
-		return "EGLD"
-	case Theta:
-		return "THETA"
 	case Flow:
 		return "FLOW"
-	case Solana:
-		return "SOL"
-	case Algorand:
-		return "ALGO"
-	case Cardano:
-		return "ADA"
+	case Gnosis:
+		return "xDAI"
+	case Harmony:
+		return "ONE"
+	case Heco:
+		return "HT"
+	case Hedera:
+		return "HBAR"
+	case Horizen:
+		return "ZEN"
+	case IoTeX:
+		return "IOTX"
+	case Klaytn:
+		return "KLAY"
+	case KuCoin:
+		return "KCS"
+	case Litecoin:
+		return "LTC"
+	case Monero:
+		return "XMR"
+	case Near:
+		return "NEAR"
+	case Oasis:
+		return "ROSE"
+	case Optimism:
+		return "ETH"
+	case Palm:
+		return "PALM"
+	case Polygon:
+		return "MATIC"
 	case Ripple:
 		return "XRP"
+	case Solana:
+		return "SOL"
+	case Stacks:
+		return "STX"
 	case Stellar:
 		return "XLM"
 	case Tezos:
 		return "XTZ"
+	case Theta:
+		return "THETA"
+	case Tron:
+		return "TRX"
+	case VeChain:
+		return "VET"
+	case XDC:
+		return "XDC"
+	case ZCash:
+		return "ZEC"
+	case ZkSync:
+		return "ETH"
 	default:
 		return ""
 	}
