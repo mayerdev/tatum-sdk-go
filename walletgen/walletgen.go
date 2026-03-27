@@ -26,15 +26,17 @@ func (s *service) GenerateWallet(ctx context.Context, c chain.Chain) (*WalletRes
 	return &out, s.c.Get(ctx, fmt.Sprintf("/v3/%s/wallet", chainPath(c)), nil, &out)
 }
 
-func (s *service) DeriveAddress(ctx context.Context, c chain.Chain, xpub string, index uint32) (string, error) {
-	if !supportsAddressDerivation(c) {
+func (s *service) DeriveAddress(ctx context.Context, ch chain.Chain, xpub string, index uint32) (string, error) {
+	caps := ch.GetCapabilities()
+	if caps == nil {
 		return "", ErrNotSupported
 	}
+
 	var apiPath string
-	if tpl, ok := customAddressPath[c]; ok {
+	if tpl, ok := customAddressPath[ch]; ok {
 		apiPath = fmt.Sprintf(tpl, xpub, index)
 	} else {
-		apiPath = fmt.Sprintf("/v3/%s/address/%s/%d", chainPath(c), xpub, index)
+		apiPath = fmt.Sprintf("/v3/%s/address/%s/%d", chainPath(ch), xpub, index)
 	}
 
 	var out addressResponse
@@ -42,13 +44,14 @@ func (s *service) DeriveAddress(ctx context.Context, c chain.Chain, xpub string,
 	return out.Address, err
 }
 
-func (s *service) DerivePrivateKey(ctx context.Context, c chain.Chain, mnemonic string, index uint32) (string, error) {
-	if !supportsPrivKeyDerivation(c) {
+func (s *service) DerivePrivateKey(ctx context.Context, ch chain.Chain, mnemonic string, index uint32) (string, error) {
+	caps := ch.GetCapabilities()
+	if caps == nil {
 		return "", ErrNotSupported
 	}
 
 	body := privKeyRequest{Mnemonic: mnemonic, Index: index}
 	var out privKeyResponse
-	err := s.c.Post(ctx, fmt.Sprintf("/v3/%s/wallet/priv", chainPath(c)), nil, body, &out)
+	err := s.c.Post(ctx, fmt.Sprintf("/v3/%s/wallet/priv", chainPath(ch)), nil, body, &out)
 	return out.value(), err
 }

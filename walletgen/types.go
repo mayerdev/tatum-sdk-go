@@ -52,20 +52,6 @@ func chainPath(c chain.Chain) string {
 	return p
 }
 
-var noAddressDerivation = map[chain.Chain]bool{
-	chain.Solana:   true,
-	chain.Algorand: true,
-	chain.EGLD:     true,
-}
-
-var noPrivKeyDerivation = map[chain.Chain]bool{
-	chain.Solana:   true,
-	chain.Algorand: true,
-}
-
 var customAddressPath = map[chain.Chain]string{
 	chain.Flow: "/v3/flow/pubkey/%s/%d",
 }
-
-func supportsAddressDerivation(c chain.Chain) bool { return !noAddressDerivation[c] }
-func supportsPrivKeyDerivation(c chain.Chain) bool { return !noPrivKeyDerivation[c] }

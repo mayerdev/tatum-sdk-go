@@ -71,4 +71,9 @@ var capabilities = map[Chain]CapabilitiesInfo{
 	EthereumClassic: emvCap,
 	Base:            emvCap,
 	ZkSync:          emvCap,
+
+	Tron: {
+		Derivable:  DeriveHD,
+		DerivePath: "m/44'/195'/0'/0",
+	},
 }
