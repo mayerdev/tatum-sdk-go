@@ -223,7 +223,7 @@ type SolanaTransactionInfo struct {
 		} `json:"message"`
 		Signatures []string `json:"signatures"`
 	} `json:"transaction"`
-	Version int `json:"version"`
+	Version any `json:"version"`
 }
 
 type TronTransactionInfo struct {
