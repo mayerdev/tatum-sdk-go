@@ -15,52 +15,52 @@ func (cn ChainNetwork) Split() (Chain, Network) {
 }
 
 const (
-	Ethereum        Chain = "ethereum"
-	Bitcoin         Chain = "bitcoin"
-	Polygon         Chain = "polygon"
-	BNBSmartChain   Chain = "bsc"
-	Solana          Chain = "solana"
-	Avalanche       Chain = "avax"
-	Tron            Chain = "tron"
-	Litecoin        Chain = "litecoin"
-	BitcoinCash     Chain = "bch"
-	Dogecoin        Chain = "doge"
-	Cardano         Chain = "cardano"
-	Ripple          Chain = "xrp"
-	Stellar         Chain = "xlm"
 	Algorand        Chain = "algo"
-	Tezos           Chain = "tezos"
-	Monero          Chain = "xmr"
-	Dash            Chain = "dash"
-	ZCash           Chain = "zec"
-	Optimism        Chain = "optimism"
 	Arbitrum        Chain = "arbitrum"
-	Cronos          Chain = "cro"
-	Klaytn          Chain = "klay"
-	Oasis           Chain = "oasis"
-	KuCoin          Chain = "kcc"
 	Aurora          Chain = "aurora"
+	Avalanche       Chain = "avax"
+	BNBSmartChain   Chain = "bsc"
+	Base            Chain = "base"
+	Bitcoin         Chain = "bitcoin"
+	BitcoinCash     Chain = "bch"
+	Cardano         Chain = "cardano"
 	Celo            Chain = "celo"
-	Heco            Chain = "heco"
-	Near            Chain = "near"
-	Palm            Chain = "palm"
-	Gnosis          Chain = "gnosis"
-	Theta           Chain = "theta"
-	Stacks          Chain = "stacks"
-	Horizen         Chain = "zen"
+	Chiliz          Chain = "chz"
+	Cronos          Chain = "cro"
+	Dash            Chain = "dash"
+	Dogecoin        Chain = "doge"
+	EGLD            Chain = "egld"
+	Ethereum        Chain = "ethereum"
+	EthereumClassic Chain = "etc"
 	Fantom          Chain = "ftm"
 	Flare           Chain = "flare"
 	Flow            Chain = "flow"
-	EthereumClassic Chain = "etc"
-	VeChain         Chain = "vet"
-	IoTeX           Chain = "iotx"
+	Gnosis          Chain = "gnosis"
 	Harmony         Chain = "one"
+	Heco            Chain = "heco"
 	Hedera          Chain = "hbar"
-	Chiliz          Chain = "chz"
-	Base            Chain = "base"
-	ZkSync          Chain = "zksync"
-	EGLD            Chain = "egld"
+	Horizen         Chain = "zen"
+	IoTeX           Chain = "iotx"
+	Klaytn          Chain = "klay"
+	KuCoin          Chain = "kcc"
+	Litecoin        Chain = "litecoin"
+	Monero          Chain = "xmr"
+	Near            Chain = "near"
+	Oasis           Chain = "oasis"
+	Optimism        Chain = "optimism"
+	Palm            Chain = "palm"
+	Polygon         Chain = "polygon"
+	Ripple          Chain = "xrp"
+	Solana          Chain = "solana"
+	Stacks          Chain = "stacks"
+	Stellar         Chain = "xlm"
+	Tezos           Chain = "tezos"
+	Theta           Chain = "theta"
+	Tron            Chain = "tron"
+	VeChain         Chain = "vet"
 	XDC             Chain = "xdc"
+	ZCash           Chain = "zec"
+	ZkSync          Chain = "zksync"
 )
 
 const (
@@ -69,10 +69,30 @@ const (
 )
 
 func (chainID Chain) On(network Network) ChainNetwork {
-	if chainID == Ethereum && network == Testnet {
-		return "ethereum-sepolia"
+	if (chainID == Ethereum || chainID == Base) && network == Testnet {
+		return ChainNetwork(chainID + "-sepolia")
 	} else if chainID == Solana && network == Testnet {
 		return "solana-devnet"
+	} else if chainID == Arbitrum {
+		return "arb-one-mainnet"
+	} else if chainID == Chiliz {
+		return ChainNetwork("chiliz-" + network)
+	} else if chainID == Fantom {
+		return ChainNetwork("fantom-" + network)
+	} else if chainID == Flare && network == Testnet {
+		return "flare-coston2"
+	} else if chainID == Klaytn {
+		if network == Testnet {
+			return "klaytn-baobab"
+		}
+
+		return "klaytn-cypress"
+	} else if chainID == Litecoin {
+		return ChainNetwork("litecoin-core-" + network)
+	} else if chainID == Polygon && network == Testnet {
+		return "polygon-amoy"
+	} else if chainID == Ripple {
+		return ChainNetwork("ripple-" + network)
 	}
 
 	return ChainNetwork(fmt.Sprintf("%s-%s", chainID, network))
